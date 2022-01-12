@@ -20,6 +20,13 @@ def start(update, context):
     ])
 )
 
+def echo(update, context):
+    print("hello")
+    updater.bot.send_message("lolok")
+    
+    """Echo the user message."""
+
+
 def main():
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -34,6 +41,7 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.text, echo))
 
 
     # Start the Bot
