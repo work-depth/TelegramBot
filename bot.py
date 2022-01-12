@@ -2,6 +2,7 @@ import logging
 from telegram.ext import *
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import os
+from telegram.ext import Updater, MessageHandler, Filters
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,16 @@ def echo(update, context):
     
     """Echo the user message."""
 
+def new_member(update, context):
+    for member in update.message.new_chat_members:
+        if member.username == 'bhanChod_bot':
+            update.message.reply_text('Welcome')
+
+        elif member.username != 'YourBot':
+            update.message.reply_text('Welcome lol')
+            
+
+
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
@@ -49,6 +60,8 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(MessageHandler(Filters.text, echo))
+
+    dp.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_member))
 
     dp.add_error_handler(error)
 
