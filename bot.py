@@ -27,6 +27,8 @@ def echo(update, context):
     print("hello")
     print(update.message)
     updater.bot.send_message(update.message.chat.id,"lolok")
+
+    
     
     """Echo the user message."""
 
@@ -34,6 +36,10 @@ def new_member(update, context):
     for member in update.message.new_chat_members:
         if member.username == 'bhanChod_bot':
             update.message.reply_text('Welcome')
+            allMembers = updater.bot.get_chat_administrators(update.message.chat.id)
+            for member in allMembers:
+                print(member.user.first_name)
+            
 
         elif member.username != 'YourBot':
             update.message.reply_text('Welcome lol')
