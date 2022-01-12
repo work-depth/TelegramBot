@@ -3,6 +3,8 @@ from telegram.ext import *
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import os
 
+logger = logging.getLogger(__name__)
+
 TOKEN = "5070020632:AAF8FSn_WUBQBLRdAuSXmjqjjC_y3MjfCf8"
 print(TOKEN)
 # logging.basicConfig(filename="newfile.log",
@@ -22,10 +24,15 @@ def start(update, context):
 
 def echo(update, context):
     print("hello")
-    updater.bot.send_message("lolok")
+    print(update.message)
+    updater.bot.send_message(update.message.chat.id,"lolok")
     
     """Echo the user message."""
 
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    
 
 def main():
     """Start the bot."""
@@ -42,6 +49,8 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(MessageHandler(Filters.text, echo))
+
+    dp.add_error_handler(error)
 
 
     # Start the Bot
