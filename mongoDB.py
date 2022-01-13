@@ -9,7 +9,6 @@ collection = db["rooms"]
 def createUser(userID, name, profile, isAdmin):
     user = User(userID, name, profile, isAdmin)
 
-
 def createRoom(groupID, userList, adminList):
     try:
         insertion = {"_id" : groupID}
@@ -18,17 +17,13 @@ def createRoom(groupID, userList, adminList):
         for user in userList:
             userDict[user.name] = user
         for admin in adminList:
-            userDict[user.name] = user
+            userDict[admin.name] = admin
         bibliography = {}
         notifyMessages = {}
         insertion["userList"] = userDict
-        insertion["adminDict"] = adminDict
+        insertion["adminList"] = adminDict
         insertion["bibliography"] = bibliography
         insertion["notifyMessages"] = notifyMessages
         collection.insert_one(insertion)
     except Exception as e:
         print(e)
-        
-
-    
-
