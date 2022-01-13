@@ -5,7 +5,18 @@ class User:
         self.profile = profile
         self.isAdmin = isAdmin
 
+class Task:
+    def __init__(self,ID, assignedUser, message, timeOfCreation, deadline, status):
+        self.ID = ID
+        self.assignedUser = assignedUser
+        self.message = message
+        self.timeOfCreation = timeOfCreation
+        self.deadline = deadline
+        self.status = status
+        
 
+def createOrganisation(gcID, Users, Admins):
+    organisation = {}
 def catch(taskID):
 
 def update_task([ID, attr, “message”]):
