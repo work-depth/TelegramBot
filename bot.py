@@ -23,7 +23,15 @@ def start(update, context):
     ])
 )
 
+def addMemberIfNotAdded(update, context):
+    if(update.message.from_user not in allMembers):
+        allMembers.append(update.message.from_user)
+        print("Added")
+
+
 def echo(update, context):
+    addMemberIfNotAdded(update, context)
+    print(update.message.chat.id)
     print("hello")
     print(update.message)
     updater.bot.send_message(update.message.chat.id,"lolok")
@@ -35,7 +43,8 @@ def echo(update, context):
 def new_member(update, context):
     for member in update.message.new_chat_members:
         if member.username == 'bhanChod_bot':
-            update.message.reply_text('Welcome')
+            update.message.reply_text('Thanks for adding me.\nHope I will be able to help as much as possible. Please say Hi to me once so I can get to know all of you.')
+            global allMembers
             allMembers = updater.bot.get_chat_administrators(update.message.chat.id)
             for member in allMembers:
                 print(member.user.first_name)
