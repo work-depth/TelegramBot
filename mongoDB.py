@@ -5,9 +5,11 @@ from pymongo import Mongoclient
 cluster = Mongoclient("mongodb+srv://yashwardhan:PY74NORNY5OnUrH6@cluster0.1wicn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = cluster["database"]
 collection = db["rooms"]
+Organisations = {}
 
 def createUser(userID, name, profile, isAdmin):
     user = User(userID, name, profile, isAdmin)
+    organisation = 
 
 def createRoom(groupID, userList, adminList):
     try:
