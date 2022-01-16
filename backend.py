@@ -16,23 +16,31 @@ class Task:
 
 
 def createOrganisation(gcID, Users, Admins, organisation):
+    pass
+
+
     
 
-def catch(taskID):
-    
-
-def update_task([ID, attr, “message”]):
+def update_task(ID, attr, message):
+    pass
 
 def task_list(attr):
+    pass
 
 def update_bibliography(attr, link):
+    pass
 
 def tasks(attr1, attr2):
+    pass
 
 def member(attr1, telegramID):
+    pass
 
 def admin(attr1, telegramID):
+    pass
 
 def reminder(attr1, message):
+    pass
     
 def notify(message):
+    pass
