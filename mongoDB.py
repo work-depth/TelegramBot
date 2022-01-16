@@ -96,10 +96,53 @@ def admin(param, selfID, userID, groupID):
             if(organisation["userList"].has_key(userID)):
                 if organisation["adminList"].has_key(userID):
                     collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})      
-                    collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
-                          
+                collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
+            else:
+                print("No such user is present in this group")
+    else:
+        print("you are not an admin")
+
+def update_task(taskID, param, message, userID, groupID):
+    organisation = collection.find_one({"_id": groupID})
+    if(organisation["adminList"].has_key(userID)):
+        found=0
+        for task in organisation["tasks"][0]:
+            if(task.ID == taskID):
+                if(param=="complete"):
+                    task.assignedUser             
+                    collection.update_one({"_id": groupID}, {"$unset": {organisation["tasks"][taskID]}})
+                    organisation["tasks"][task.assignedUser].remove(task)
+                    collection.update_one({"_id": groupID}, {"$set", {organisation["tasks"][task.assignedUser]: organisation["tasks"][task.assignedUser]}})
+                elif(param=="update"):
+                    pass
+                found=1
+                break
+        if(found==0):
+            print("task is already completed or isn't created")
+    else:
+        print("You are not an admin. So you can't update the task")
+    
+
+def update_bibliography(param, link, message, groupID):
+    organisation = collection.find_one({"_id": groupID})
+    
+    if(param=="add"):
+        organisation["bibliography"][message].append(link)
+        collection.update_one({"_id": groupID}, {"$addToSet": {organisation["bibliography"][message]: link}})
+    elif(param=="remove"):
+        if(message==""):
+            for i in organisation["bibliography"]:
+                if(organisation["bibliography"][i]==link):
+                    collection.update_one({"_id": groupID}, {"$unset": {organisation["bibliography"][i]}})
+        else:
+            collection.update_one({"_id": groupID}, {"$unset": {organisation["bibliography"][message]}})
 
 
+def reminder(param, message):
+    pass
+
+def notify(message):
+    return
 # def createRoom(groupID, userList, adminList):
 #     try:
 #         insertion = {"_id" : groupID}
