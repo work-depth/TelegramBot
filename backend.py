@@ -15,23 +15,4 @@ class Task:
         self.status = status
 
 
-    
 
-def update_task(ID, attr, message):
-    pass
-
-
-def update_bibliography(attr, link):
-    pass
-
-def tasks(attr1, attr2):
-    pass
-
-def admin(attr1, telegramID):
-    pass
-
-def reminder(attr1, message):
-    pass
-    
-def notify(message):
-    pass
