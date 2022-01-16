@@ -42,8 +42,7 @@ def catch(groupID, userID, taskID):
                 memory_task[i].assignedUser = organisation["userList"][userID]
                 memory_task[i].status = "assigned"
                 updated_taskList = organisation["tasks"][userID].append(memory_task[i]).clone()
-                collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][userID]:updated_taskList}})                
-                collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][0][i]:memory_task[i]}})                
+                collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][userID]:updated_taskList, organisation["tasks"][0][i]:memory_task[i]}})                
                 flag=1
                 break
         if(flag==0):
@@ -67,13 +66,39 @@ def task_list(attr, selfID, groupID):
         else:
             print("You are not the admin")
 
-def admin(attr1, selfID, userID, groupID):
+def admin(param, selfID, userID, groupID):
     organisation = collection.find_one({"_id": groupID})
     if(organisation["adminList"].has_key(selfID)):            
-        if(attr1=="promote"):
-            
-            
-        else if("demote"):
+        if(param=="promote"):
+            if(organisation["userList"].has_key(userID)):
+                user = organisation["userList"][userID]
+                if user.isAdmin==True:
+                    print("User is already an Admin")
+                else:
+                    user.isAdmin = True
+                    organisation["adminList"][userID] = user
+                    collection.update_one({"_id": groupID}, {"$set": {organisation["adminList"][userID]:user, organisation["userList"][userID]:user}})                
+            else:
+                print("No such user is present in this group")
+        elif(param=="demote"):
+            if(organisation["userList"].has_key(userID)):
+                if organisation["adminList"].has_key(userID):
+                    user = organisation["userList"][userID]
+                    collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})                
+                    collection.update_one({"_id": groupID}, {"$set": {organisation["userList"][userID]:user}})  
+                    print("User is already an Admin")
+                else:
+                    user = organisation["userList"][userID]
+                    collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
+            else:
+                print("No such user is present in this group")
+        elif(param=="remove"):
+            if(organisation["userList"].has_key(userID)):
+                if organisation["adminList"].has_key(userID):
+                    collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})      
+                    collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
+                          
+
 
 # def createRoom(groupID, userList, adminList):
 #     try:
