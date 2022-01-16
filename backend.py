@@ -13,6 +13,3 @@ class Task:
         self.timeOfCreation = timeOfCreation
         self.deadline = deadline
         self.status = status
-
-
-
