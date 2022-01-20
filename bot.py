@@ -46,7 +46,7 @@ def registerUser(update, context):
     else:
         currUser = update.message.from_user
         currId = currUser.id
-        currName = currUser.first_name+" "+currUser.last_name
+        currName = currUser.username
         currIsAdmin = currId in get_admin_ids(updater.bot, update.message.chat.id)
         currGrpId = update.message.chat.id
         print(update)
@@ -55,8 +55,55 @@ def registerUser(update, context):
         print()
         # mongoDB.addUser(currId, currName, temp[1], currIsAdmin, currGrpId)
 
-      
 
+def showTasks(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+    msg = ""
+    if(len(temp)<2):
+        # msg = mongoDB.task_list("personal", currId, currGrpId)
+        updater.bot.send_message(update.message.chat.id,"Your assigned tasks are:")
+    else:
+        if(temp[1]=="all"):
+            # msg = mongoDB.task_list("all", currId, currGrpId)
+            print("all", currId, currGrpId)
+            updater.bot.send_message(update.message.chat.id,"All tasks are:")
+
+        elif (temp[1]=="personal"):
+            # msg = mongoDB.task_list("personal", currId, currGrpId)
+            print("personal", currId, currGrpId)
+            updater.bot.send_message(update.message.chat.id,"Your assigned tasks are:")
+
+        else:
+            updater.bot.send_message(update.message.chat.id,"Sorry....I didn't get that.")
+        
+    updater.bot.send_message(update.message.chat.id,"Rukooo")
+
+
+def taskInfo(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+    a = 1
+    try:
+        a = int(temp[1])
+    except:
+        updater.bot.send_message(update.message.chat.id,"Task ID should be a number.")
+        return
+
+    if(len(temp)<2):
+        updater.bot.send_message(update.message.chat.id,"Please specify the task ID")
+        return
+    else:
+        # mongoDB.catch(currGrpId, currId, a)
+        print("Getting the task id ",currGrpId, currId, a)
+        updater.bot.send_message(update.message.chat.id,"Here are the details")
+
+
+      
 def addMemberIfNotAdded(update, context):
     if(update.message.from_user not in allMembers):
         allMembers.append(update.message.from_user)
@@ -109,6 +156,8 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("register", registerUser))
+    dp.add_handler(CommandHandler("tasklist", showTasks))
+    dp.add_handler(CommandHandler("taskinfo", taskInfo))
     dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_member))
     dp.add_error_handler(error)

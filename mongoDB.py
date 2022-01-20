@@ -32,6 +32,7 @@ def addUser(userID, name, profile, isAdmin, groupID):
     except Exception as e:
         print(e)
 
+# user enters task id
 def catch(groupID, userID, taskID):
     organisation = collection.find_one({"_id": groupID})
     if(organisation["userList"].has_key(userID)):
@@ -50,6 +51,8 @@ def catch(groupID, userID, taskID):
     else:
         print("You are not registered")
 
+# Return the tasks 
+# attr is all 
 def task_list(attr, selfID, groupID):
     organisation = collection.find_one({"_id": groupID})
     if(attr=="all"):
@@ -65,7 +68,9 @@ def task_list(attr, selfID, groupID):
                 print(task.ID, " ", task.message, " ", task.timeOfCreation, " ", task.deadline, " ", task.status, " ", task.assignedUser)
         else:
             print("You are not the admin")
+            return "You are not the admin"
 
+# to promte demote admin
 def admin(param, selfID, userID, groupID):
     organisation = collection.find_one({"_id": groupID})
     if(organisation["adminList"].has_key(selfID)):            
