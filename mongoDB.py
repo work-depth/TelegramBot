@@ -20,7 +20,7 @@ collection.delete_one({"_id":2})
 collection.delete_one({"_id":3})
 collection.delete_one({"_id":1})
 
-def addUser(userID, name, profile, isAdmin, groupID):
+def register(userID, name, profile, isAdmin, groupID):
     try:
         user = User(userID, name, profile, isAdmin)
         organisation = collection.find_one({"_id": groupID})

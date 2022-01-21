@@ -18,10 +18,8 @@ allMembers = []
 roles = []
 print(TOKEN)
 # logging.basicConfig(filename="newfile.log",
-#                     format='%(asctime)s %(message)s',
-#                     filemode='w')
+# format='%(asctime)s %(message)s', filemode='w')
 def start(update, context):
-    # print(update)
     msg  = "Hello, I am bhan_chod."
     update.message.reply_text(msg)
     update.message.reply_text(
@@ -117,10 +115,8 @@ def echo(update, context):
     print(update.message)
     updater.bot.send_message(update.message.chat.id,"lolok")
 
-    
-    
-    """Echo the user message."""
 
+"""Echo the user message."""
 def new_member(update, context):
     for member in update.message.new_chat_members:
         if member.username == 'bhanChod_bot':
