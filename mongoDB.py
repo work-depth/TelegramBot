@@ -14,17 +14,17 @@ taskID=0
 # collection.insert_many([organisation1, organisation2])
 # results = collection.find({"_id": 1})
 
-for result in results:
-    print(result)
-collection.delete_one({"_id":2})
-collection.delete_one({"_id":3})
-collection.delete_one({"_id":1})
-def getUserID(username, groupID):
-    organisation = collection.find_one({"_id": groupID})
-    for userID in organisation["userList"].keys():
-        if(organisation["userList"][userID].username == username):
-            return userID
-    return "User not registered or the username has been updated"
+# for result in results:
+#     print(result)
+# collection.delete_one({"_id":2})
+# collection.delete_one({"_id":3})
+# collection.delete_one({"_id":1})
+# def getUserID(username, groupID):
+#     organisation = collection.find_one({"_id": groupID})
+#     for userID in organisation["userList"].keys():
+#         if(organisation["userList"][userID].username == username):
+#             return userID
+#     return "User not registered or the username has been updated"
 
 def register(userID, username, profile, isAdmin, groupID):
     try:
