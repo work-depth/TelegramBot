@@ -100,6 +100,55 @@ def taskInfo(update, context):
         print("Getting the task id ",currGrpId, currId, a)
         updater.bot.send_message(update.message.chat.id,"Here are the details")
 
+def promoteUser(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+    if(len(temp) < 2):
+        updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention who you wish to promote")
+    else:
+        idOfPersonToPromote = mongoDB.getUserID(temp[1][1:], currGrpId)
+        if(idOfPersonToPromote == -1):
+            updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
+            return
+        else:
+            mongodb.admin("promote", currId, idOfPersonToPromote, currGrpId)
+    
+def demoteUser(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+    if(len(temp) < 2):
+        updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention who you wish to demote")
+    else:
+        idOfPersonToDemote = mongoDB.getUserID(temp[1][1:], currGrpId)
+        if(idOfPersonToDemote == -1):
+            updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
+            return
+        else:
+            mongodb.admin("demote", currId, idOfPersonToDemote, currGrpId)
+            updater.bot.promote_chat_member(currGrpId, idOfPersonToDemote)
+            
+
+def removeUser(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+    if(len(temp) < 2):
+        updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention who you wish to remote")
+    else:
+        idOfPersonToRemove = mongoDB.getUserID(temp[1][1:], currGrpId)
+        if(idOfPersonToRemove == -1):
+            updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
+            return
+        else:
+            mongodb.admin("remove", currId, idOfPersonToRemove, currGrpId)
+            # https://core.telegram.org/bots/api#banchatmember
+            updater.bot.ban_chat_member(currGrpId, idOfPersonToRemove)
+
 
       
 def addMemberIfNotAdded(update, context):
@@ -154,6 +203,9 @@ def main():
     dp.add_handler(CommandHandler("register", registerUser))
     dp.add_handler(CommandHandler("tasklist", showTasks))
     dp.add_handler(CommandHandler("taskinfo", taskInfo))
+    dp.add_handler(CommandHandler("promote", promoteUser))
+    dp.add_handler(CommandHandler("demote", demoteUser))
+    dp.add_handler(CommandHandler("remove", removeUser))
     dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_member))
     dp.add_error_handler(error)

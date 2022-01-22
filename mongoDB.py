@@ -24,6 +24,7 @@ def getUserID(username, groupID):
     for userID in organisation["userList"].keys():
         if(organisation["userList"][userID].username == username):
             return userID
+    return -1
 
 def register(userID, username, profile, isAdmin, groupID):
     try:
