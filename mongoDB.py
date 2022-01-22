@@ -88,18 +88,21 @@ def admin(param, selfID, userID, groupID):
                     user.isAdmin = True
                     organisation["adminList"][userID] = user
                     collection.update_one({"_id": groupID}, {"$set": {organisation["adminList"][userID]:user, organisation["userList"][userID]:user}})                
+                    return "user has been promoted to Admin"
             else:
                 return "No such user is present in this group"
         elif(param=="demote"):
             if(organisation["userList"].has_key(userID)):
                 if organisation["adminList"].has_key(userID):
                     user = organisation["userList"][userID]
-                    collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})                
+                    user.isAdmin = True
+                    collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})
                     collection.update_one({"_id": groupID}, {"$set": {organisation["userList"][userID]:user}})  
-                    return "User is already an Admin"
+                    return "User demoted from Admin"
                 else:
                     user = organisation["userList"][userID]
                     collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
+                    return "User removed from group"
             else:
                 return "No such user is present in this group"
         elif(param=="remove"):
@@ -107,6 +110,7 @@ def admin(param, selfID, userID, groupID):
                 if organisation["adminList"].has_key(userID):
                     collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})      
                 collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
+                return "User removed from group"
             else:
                 return "No such user is present in this group"
     else:
