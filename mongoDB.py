@@ -19,10 +19,15 @@ for result in results:
 collection.delete_one({"_id":2})
 collection.delete_one({"_id":3})
 collection.delete_one({"_id":1})
+def getUserID(username, groupID):
+    organisation = collection.find_one({"_id": groupID})
+    for userID in organisation["userList"].keys():
+        if(organisation["userList"][userID].username == username):
+            return userID
 
-def register(userID, name, profile, isAdmin, groupID):
+def register(userID, username, profile, isAdmin, groupID):
     try:
-        user = User(userID, name, profile, isAdmin)
+        user = User(userID, username, profile, isAdmin)
         organisation = collection.find_one({"_id": groupID})
         if(collection.count_documents({"_id":groupID})):
             collection.insert_one({"_id": groupID, "userList": {}, "adminList": {}, "tasks": {}, "bibliography": {}, "notifyMessages": {}})

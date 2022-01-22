@@ -1,7 +1,7 @@
 class User:
-    def __init__(self, ID, name, profile, isAdmin) -> None:
+    def __init__(self, ID, username, profile, isAdmin) -> None:
         self.ID = ID
-        self.name = name
+        self.username = username
         self.profile = profile
         self.isAdmin = isAdmin
 
