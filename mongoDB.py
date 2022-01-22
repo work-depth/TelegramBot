@@ -1,12 +1,14 @@
 from backend import *
 import pymongo
 from pymongo import MongoClient
+import uuid
+from datetime import datetime
 
 cluster = MongoClient("mongodb+srv://yashwardhan:PY74NORNY5OnUrH6@cluster0.1wicn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = cluster["database"]
 collection = db["rooms"]
 Organisations = {}
-
+taskID=0
 # organisation1 = {"_id": 2, "userList": ["Anis", "John", "Yash"], "AdminList": ["Anis", "Yash"]}
 # organisation2 = {"_id": 3, "userList": ["Ani", "Joh", "Yas"], "AdminList": ["Ani", "Yas"]}
 # collection.insert_many([organisation1, organisation2])
@@ -24,6 +26,7 @@ def getUserID(username, groupID):
     for userID in organisation["userList"].keys():
         if(organisation["userList"][userID].username == username):
             return userID
+    return "User not registered or the username has been updated"
 
 def register(userID, username, profile, isAdmin, groupID):
     try:
@@ -112,26 +115,38 @@ def admin(param, selfID, userID, groupID):
     else:
         print("you are not an admin")
 
-def update_task(taskID, param, message, userID, groupID):
+def update_task(taskID, param, message, userID, groupID):#user can change the status of the task and give updates to the admin
+    organisation = collection.find_one({"_id": groupID})
+    for task in organisation["tasks"][0]:
+        if(task.ID == taskID):
+            if(task.status == "active"):
+                organisation["tasks"][0].remove(task)
+                organisation["tasks"][task.assignedUser.ID].remove(task)
+                task.userUpdates = param
+                organisation["tasks"][0].append(task)
+                organisation["tasks"][task.assignedUser.ID].append(task)
+                collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][0]: organisation["tasks"][0]}})
+                collection.update_one({"_id": groupID}, {"$set", {organisation["tasks"][task.assignedUser]: organisation["tasks"][task.assignedUser.ID]}})
+                return "Task updated successfully"
+            else:
+                return "Task is already completed"
+    return "Task is isn't created"
+  
+def add_task(message, deadline, userID, groupID):
+    global taskID
     organisation = collection.find_one({"_id": groupID})
     if(organisation["adminList"].has_key(userID)):
-        found=0
-        for task in organisation["tasks"][0]:
-            if(task.ID == taskID):
-                if(param=="complete"):
-                    task.assignedUser             
-                    collection.update_one({"_id": groupID}, {"$unset": {organisation["tasks"][taskID]}})
-                    organisation["tasks"][task.assignedUser].remove(task)
-                    collection.update_one({"_id": groupID}, {"$set", {organisation["tasks"][task.assignedUser]: organisation["tasks"][task.assignedUser]}})
-                elif(param=="update"):
-                    pass
-                found=1
-                break
-        if(found==0):
-            print("task is already completed or isn't created")
+        timeOfCreation = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        task = Task(taskID, None, message, timeOfCreation, deadline, "active", "")
+        taskID=taskID+1
+        organisation
+        organisation["tasks"][0].append(task)
+        collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][0]: organisation["tasks"][0]}})
+        return "Task added successfully"
     else:
-        print("You are not an admin. So you can't update the task")
-    
+        return "You are not an admin and cannot create a task"
+
+
 
 def update_bibliography(param, link, message, groupID):
     organisation = collection.find_one({"_id": groupID})
