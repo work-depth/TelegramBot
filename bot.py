@@ -5,10 +5,9 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import os
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
 # import mongoDB
-
 logger = logging.getLogger(__name__)
 
-TOKEN = "5070020632:AAF8FSn_WUBQBLRdAuSXmjqjjC_y3MjfCf8"
+TOKEN = os.environ.get('TOKEN')
 allMembers = []
 
 # register command for each user. call addUser
@@ -113,7 +112,7 @@ def promoteUser(update, context):
             updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
             return
         else:
-            mongodb.admin("promote", currId, idOfPersonToPromote, currGrpId)
+            mongoDB.admin("promote", currId, idOfPersonToPromote, currGrpId)
     
 def demoteUser(update, context):
     temp = update.message.text.split()
@@ -128,7 +127,7 @@ def demoteUser(update, context):
             updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
             return
         else:
-            mongodb.admin("demote", currId, idOfPersonToDemote, currGrpId)
+            mongoDB.admin("demote", currId, idOfPersonToDemote, currGrpId)
             updater.bot.promote_chat_member(currGrpId, idOfPersonToDemote)
             
 
@@ -145,7 +144,7 @@ def removeUser(update, context):
             updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
             return
         else:
-            mongodb.admin("remove", currId, idOfPersonToRemove, currGrpId)
+            mongoDB.admin("remove", currId, idOfPersonToRemove, currGrpId)
             # https://core.telegram.org/bots/api#banchatmember
             updater.bot.ban_chat_member(currGrpId, idOfPersonToRemove)
 
