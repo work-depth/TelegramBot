@@ -4,7 +4,7 @@ from telegram.ext import *
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import os
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
-# import mongoDB
+import mongoDB
 logger = logging.getLogger(__name__)
 
 TOKEN = os.environ.get('TOKEN')
@@ -50,7 +50,7 @@ def registerUser(update, context):
         print()
         print(currId, currName, temp[1], currIsAdmin, currGrpId)
         print()
-        # mongoDB.addUser(currId, currName, temp[1], currIsAdmin, currGrpId)
+        updater.bot.send_message(update.message.chat.id, mongoDB.addUser(currId, currName, temp[1], currIsAdmin, currGrpId))
 
 
 def showTasks(update, context):
@@ -60,23 +60,24 @@ def showTasks(update, context):
     currGrpId = update.message.chat.id
     msg = ""
     if(len(temp)<2):
-        # msg = mongoDB.task_list("personal", currId, currGrpId)
+        msg = mongoDB.task_list("personal", currId, currGrpId)
         updater.bot.send_message(update.message.chat.id,"Your assigned tasks are:")
     else:
         if(temp[1]=="all"):
-            # msg = mongoDB.task_list("all", currId, currGrpId)
+            msg = mongoDB.task_list("all", currId, currGrpId)
             print("all", currId, currGrpId)
             updater.bot.send_message(update.message.chat.id,"All tasks are:")
 
         elif (temp[1]=="personal"):
-            # msg = mongoDB.task_list("personal", currId, currGrpId)
+            msg = mongoDB.task_list("personal", currId, currGrpId)
             print("personal", currId, currGrpId)
             updater.bot.send_message(update.message.chat.id,"Your assigned tasks are:")
 
         else:
             updater.bot.send_message(update.message.chat.id,"Sorry....I didn't get that.")
+            return
         
-    updater.bot.send_message(update.message.chat.id,"Rukooo")
+    updater.bot.send_message(update.message.chat.id, msg)
 
 
 def taskInfo(update, context):
@@ -95,9 +96,9 @@ def taskInfo(update, context):
         updater.bot.send_message(update.message.chat.id,"Please specify the task ID")
         return
     else:
-        # mongoDB.catch(currGrpId, currId, a)
+        msg = "\n"+mongoDB.catch(currGrpId, currId, a)
         print("Getting the task id ",currGrpId, currId, a)
-        updater.bot.send_message(update.message.chat.id,"Here are the details")
+        updater.bot.send_message(update.message.chat.id,"Here are the details"+msg)
 
 def promoteUser(update, context):
     temp = update.message.text.split()
@@ -112,7 +113,8 @@ def promoteUser(update, context):
             updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
             return
         else:
-            mongoDB.admin("promote", currId, idOfPersonToPromote, currGrpId)
+            updater.bot.send_message(update.message.chat.id,mongoDB.admin("promote", currId, idOfPersonToPromote, currGrpId))
+            updater.bot.promote_chat_member(currGrpId, idOfPersonToPromote)
     
 def demoteUser(update, context):
     temp = update.message.text.split()
@@ -127,8 +129,9 @@ def demoteUser(update, context):
             updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
             return
         else:
-            mongoDB.admin("demote", currId, idOfPersonToDemote, currGrpId)
-            updater.bot.promote_chat_member(currGrpId, idOfPersonToDemote)
+            updater.bot.send_message(update.message.chat.id,mongoDB.admin("demote", currId, idOfPersonToDemote, currGrpId))
+            
+            
             
 
 def removeUser(update, context):
@@ -144,7 +147,7 @@ def removeUser(update, context):
             updater.bot.send_message(update.message.chat.id,"This username is not found. Perhaps they have updated the username after registering.")
             return
         else:
-            mongoDB.admin("remove", currId, idOfPersonToRemove, currGrpId)
+            updater.bot.send_message(update.message.chat.id,mongoDB.admin("remove", currId, idOfPersonToRemove, currGrpId))
             # https://core.telegram.org/bots/api#banchatmember
             updater.bot.ban_chat_member(currGrpId, idOfPersonToRemove)
 
