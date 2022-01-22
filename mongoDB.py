@@ -146,18 +146,21 @@ def add_task(message, deadline, userID, groupID):
     else:
         return "You are not an admin and cannot create a task"
 
-def remove_task(taskID, groupID):
+def remove_task(taskID, userID, groupID):
     organisation = collection.find_one({"_id": groupID})
-    for task in organisation["tasks"][0]:
-        if(task.ID == taskID):
-            organisation["tasks"][0].remove(task)
-            if(task.assignedUser!=None):
-                organisation["tasks"][task.assignedUser.ID].remove(task)
-                collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][task.assignedUser.ID]: organisation["tasks"][task.assignedUser.ID]}})
-            collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][0]: organisation["tasks"][0]}})
-            return "Task removed successfully"
-    return "Task not found"
-    
+    if(organisation["adminList"].has_key(userID)):
+        for task in organisation["tasks"][0]:
+            if(task.ID == taskID):
+                organisation["tasks"][0].remove(task)
+                if(task.assignedUser!=None):
+                    organisation["tasks"][task.assignedUser.ID].remove(task)
+                    collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][task.assignedUser.ID]: organisation["tasks"][task.assignedUser.ID]}})
+                collection.update_one({"_id": groupID}, {"$set": {organisation["tasks"][0]: organisation["tasks"][0]}})
+                return "Task removed successfully"
+        return "Task not found"
+    else:
+        return "You are not an Admin and can't delete a task"
+
 def update_bibliography(param, link, message, groupID):
     organisation = collection.find_one({"_id": groupID})
     
