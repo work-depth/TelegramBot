@@ -12,9 +12,7 @@ taskID=0
 # organisation1 = {"_id": 2, "userList": ["Anis", "John", "Yash"], "AdminList": ["Anis", "Yash"]}
 # organisation2 = {"_id": 3, "userList": ["Ani", "Joh", "Yas"], "AdminList": ["Ani", "Yas"]}
 # collection.insert_many([organisation1, organisation2])
-results = collection.find({"_id": 1})
-if(len(list(results.clone())) == 0):
-    print("no element")
+# results = collection.find({"_id": 1})
 
 for result in results:
     print(result)
@@ -55,9 +53,9 @@ def catch(groupID, userID, taskID):
                 flag=1
                 break
         if(flag==0):
-            print("invalid task")
+            return "invalid task"
     else:
-        print("You are not registered")
+        return "You are not registered"
 
 # Return the tasks 
 # attr is all 
@@ -75,7 +73,6 @@ def task_list(attr, selfID, groupID):
             for task in organisation["tasks"][attr]:
                 print(task.ID, " ", task.message, " ", task.timeOfCreation, " ", task.deadline, " ", task.status, " ", task.assignedUser)
         else:
-            print("You are not the admin")
             return "You are not the admin"
 
 # to promte demote admin
@@ -86,34 +83,34 @@ def admin(param, selfID, userID, groupID):
             if(organisation["userList"].has_key(userID)):
                 user = organisation["userList"][userID]
                 if user.isAdmin==True:
-                    print("User is already an Admin")
+                    return "User is already an Admin"
                 else:
                     user.isAdmin = True
                     organisation["adminList"][userID] = user
                     collection.update_one({"_id": groupID}, {"$set": {organisation["adminList"][userID]:user, organisation["userList"][userID]:user}})                
             else:
-                print("No such user is present in this group")
+                return "No such user is present in this group"
         elif(param=="demote"):
             if(organisation["userList"].has_key(userID)):
                 if organisation["adminList"].has_key(userID):
                     user = organisation["userList"][userID]
                     collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})                
                     collection.update_one({"_id": groupID}, {"$set": {organisation["userList"][userID]:user}})  
-                    print("User is already an Admin")
+                    return "User is already an Admin"
                 else:
                     user = organisation["userList"][userID]
                     collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
             else:
-                print("No such user is present in this group")
+                return "No such user is present in this group"
         elif(param=="remove"):
             if(organisation["userList"].has_key(userID)):
                 if organisation["adminList"].has_key(userID):
                     collection.update_one({"_id": groupID}, {"$unset": {organisation["adminList"][userID]}})      
                 collection.update_one({"_id": groupID}, {"$unset": {organisation["userList"][userID]}})
             else:
-                print("No such user is present in this group")
+                return "No such user is present in this group"
     else:
-        print("you are not an admin")
+        return "You are not an admin"
 
 def update_task(taskID, param, message, userID, groupID):#user can change the status of the task and give updates to the admin
     organisation = collection.find_one({"_id": groupID})
