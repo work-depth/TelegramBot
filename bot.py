@@ -3,11 +3,12 @@ from turtle import back
 from telegram.ext import *
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import os
+from decouple import config
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
 import mongoDB
 logger = logging.getLogger(__name__)
 
-TOKEN = os.environ.get('TOKEN')
+TOKEN = config('TOKEN')
 allMembers = []
 
 # register command for each user. call addUser
@@ -50,7 +51,7 @@ def registerUser(update, context):
         print()
         print(currId, currName, temp[1], currIsAdmin, currGrpId)
         print()
-        updater.bot.send_message(update.message.chat.id, mongoDB.addUser(currId, currName, temp[1], currIsAdmin, currGrpId))
+        updater.bot.send_message(update.message.chat.id, mongoDB.register(currId, currName, temp[1], currIsAdmin, currGrpId))
 
 
 def showTasks(update, context):
