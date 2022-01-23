@@ -38,10 +38,18 @@ def register(userID, username, profile, isAdmin, groupID):
             collection.insert_one({"_id": groupID, "userList": {}, "adminList": {}, "tasks": {}, "bibliography": {}, "notifyMessages": {}})
         print(39)
         organisation = collection.find_one({"_id": groupID})
+        for i in organisation.keys():
+            print(i)
         print(41)
-        organisation["userList"].update({userID: user})
+        print(userID)
+        print(user)
+        x=100
+        collection.update_one({"_id": groupID}, {"$set": {"userList":{str(userID):user.toString()}}})
+        # organisation.userList.update({userID: user})
+        # for i in organisation:
+        #     print(organisation[i])
         print(43)
-        collection.update_one({"_id": groupID}, {"$set": {organisation.userList.userID: user}})
+        # collection.update({"_id": groupID}, {"$set": {:organisation["userList"]}})
         print(45)
     except Exception as e:
         print("fuck off")
