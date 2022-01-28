@@ -22,6 +22,7 @@ tzlocal = "==4.1"
 urllib3 = "==1.26.7"
 APScheduler = "==3.6.3"
 python-dotenv = "*"
+python-decouple = "*"
 
 [dev-packages]
 

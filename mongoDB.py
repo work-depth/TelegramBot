@@ -3,8 +3,10 @@ import pymongo
 from pymongo import MongoClient
 import uuid
 from datetime import datetime
+import os
+from decouple import config
 
-cluster = MongoClient("mongodb+srv://yashwardhan:PY74NORNY5OnUrH6@cluster0.1wicn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+cluster = MongoClient(config('MongoDB_ClientURL'))
 db = cluster["database"]
 collection = db["rooms"]
 Organisations = {}
@@ -12,8 +14,9 @@ taskID=0
 # organisation1 = {"_id": 2, "userList": ["Anis", "John", "Yash"], "AdminList": ["Anis", "Yash"]}
 # organisation2 = {"_id": 3, "userList": ["Ani", "Joh", "Yas"], "AdminList": ["Ani", "Yas"]}
 # collection.insert_many([organisation1, organisation2])
-# results = collection.find({"_id": 1})
-
+# results = collection.find_one({"_id": 1})
+# if(results==None):
+#     print("yup i am here")
 # for result in results:
 #     print(result)
 # collection.delete_one({"_id":2})
@@ -30,13 +33,26 @@ def register(userID, username, profile, isAdmin, groupID):
     try:
         user = User(userID, username, profile, isAdmin)
         organisation = collection.find_one({"_id": groupID})
-        if(collection.count_documents({"_id":groupID})):
+        if(organisation==None):
+            print("yup i am here")
             collection.insert_one({"_id": groupID, "userList": {}, "adminList": {}, "tasks": {}, "bibliography": {}, "notifyMessages": {}})
+        print(39)
         organisation = collection.find_one({"_id": groupID})
-        organisation["userList"].update({userID: user})
-        collection.update_one({"_id": groupID}, {"$set": {"userList": organisation["userList"]}})
+        for i in organisation.keys():
+            print(i)
+        print(41)
+        print(userID)
+        print(user)
+        x=100
+        collection.update_one({"_id": groupID}, {"$set": {"userList":{str(userID):user.toString()}}})
+        # organisation.userList.update({userID: user})
+        # for i in organisation:
+        #     print(organisation[i])
+        print(43)
+        # collection.update({"_id": groupID}, {"$set": {:organisation["userList"]}})
+        print(45)
     except Exception as e:
-        print(e)
+        print("fuck off")
 
 # user enters task id
 def catch(groupID, userID, taskID):

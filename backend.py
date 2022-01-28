@@ -4,6 +4,13 @@ class User:
         self.username = username
         self.profile = profile
         self.isAdmin = isAdmin
+    def __init__(self, document) -> None:
+        self.ID = document["ID"]
+        self.username = document["username"]
+        self.profile = document["profile"]
+        self.isAdmin = document["isAdmin"]
+    def toString(self):
+        return {"ID": self.ID, "username": self.username, "profile":self.profile, "isAdmin": self.isAdmin}
 
 class Task:
     def __init__(self,ID, assignedUser, message, timeOfCreation, deadline, status, userUpdates):
