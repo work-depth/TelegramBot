@@ -8,6 +8,7 @@ import mongoDB
 logger = logging.getLogger(__name__)
 
 TOKEN = os.environ.get('TOKEN')
+print(TOKEN)
 allMembers = []
 
 # register command for each user. call addUser
@@ -61,17 +62,17 @@ def showTasks(update, context):
     msg = ""
     if(len(temp)<2):
         msg = mongoDB.task_list("personal", currId, currGrpId)
-        updater.bot.send_message(update.message.chat.id,"Your assigned tasks are:")
+        updater.bot.send_message(update.message.chat.id,"Your assigned tasks are: "+msg)
     else:
         if(temp[1]=="all"):
             msg = mongoDB.task_list("all", currId, currGrpId)
             print("all", currId, currGrpId)
-            updater.bot.send_message(update.message.chat.id,"All tasks are:")
+            updater.bot.send_message(update.message.chat.id,"All tasks are: "+msg)
 
         elif (temp[1]=="personal"):
             msg = mongoDB.task_list("personal", currId, currGrpId)
             print("personal", currId, currGrpId)
-            updater.bot.send_message(update.message.chat.id,"Your assigned tasks are:")
+            updater.bot.send_message(update.message.chat.id,"Your assigned tasks are: "+msg)
 
         else:
             updater.bot.send_message(update.message.chat.id,"Sorry....I didn't get that.")
