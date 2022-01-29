@@ -38,9 +38,11 @@ def register(userID, username, profile, isAdmin, groupID):
         organisation = collection.find_one({"_id": groupID})
         for i in organisation.keys():
             print(i)
-        print(userID)
-        print(user)
-        collection.update_one({"_id": groupID}, {"$set": {"userList":{str(userID):user.toString()}}})
+        # print(userID)
+        # print(user)
+        userID = str(userID)
+        # collection.update_one({"_id": groupID}, {"$set": {"userList": {userID: {}}}})
+        collection.update_one({"_id": groupID}, {"$set": {"userList."+userID :user.toDictionary()}})
         return username + " is now registered as a "+ profile
     except Exception as e:
         print(e)
@@ -69,33 +71,34 @@ def catch(groupID, userID, taskID):
 def task_list(attr, selfID, groupID):
     organisation = collection.find_one({"_id": groupID})
     if(attr=="all"):
-        for task in organisation["tasks"][0]:
-            print(task["ID"], " ", task["message"], " ", task["timeOfCreation"], " ", task["deadline"], " ", task["status"], " ", task["assignedUser"])
-
+        # for task in organisation["tasks"][0]:
+        #     print(task["ID"], " ", task["message"], " ", task["timeOfCreation"], " ", task["deadline"], " ", task["status"], " ", task["assignedUser"])
+        return organisation["tasks"][0]
     elif(attr=="personal"):
-        for task in organisation["tasks"]["selfID"]:
-            print(task.ID, " ", task.message, " ", task.timeOfCreation, " ", task.deadline, " ", task.status, " ", task.assignedUser)
+        # for task in organisation["tasks"][str(selfID)]:
+        #     print(task["ID"], " ", task["message"], " ", task["timeOfCreation"], " ", task["deadline"], " ", task["status"], " ", task["assignedUser"])
+        return organisation["tasks"][str(selfID)]
     else:
-        if(organisation["adminList"].has_key(selfID)):
-            for task in organisation["tasks"][attr]:
-                print(task.ID, " ", task.message, " ", task.timeOfCreation, " ", task.deadline, " ", task.status, " ", task.assignedUser)
+        if(organisation["adminList"].has_key(str(selfID))):
+            # for task in organisation["tasks"][attr]:
+            #     print(task["ID"], " ", task["message"], " ", task["timeOfCreation"], " ", task["deadline"], " ", task["status"], " ", task["assignedUser"])
+            return organisation["tasks"][attr]
         else:
             return "You are not the admin"
 
 # to promte demote admin
 def admin(param, selfID, userID, groupID):
     organisation = collection.find_one({"_id": groupID})
-    if(organisation["adminList"].has_key(selfID)):            
+    if(organisation["adminList"].has_key(str(selfID))):            
         if(param=="promote"):
-            if(organisation["userList"].has_key(userID)):
-                user = organisation["userList"][userID]
-                if user.isAdmin==True:
+            if(organisation["userList"].has_key(str(userID))):
+                user = convertToUser(organisation["userList"][str(userID)])
+                if organisation["userList"][str(userID)]["isAdmin"]==True:
                     return "User is already an Admin"
                 else:
-                    user.isAdmin = True
-                    organisation["adminList"][userID] = user
                     collection.update_one({"_id": groupID}, {"$set": {organisation["adminList"][userID]:user, organisation["userList"][userID]:user}})                
-                    return "user has been promoted to Admin"
+                    collection.update({"_id":groupID, "adminList":str(userID)}, {"$set": {"adminList".str(userID).isAdmin:True }})
+                    return user.username + " has been promoted to Admin"
             else:
                 return "No such user is present in this group"
         elif(param=="demote"):
