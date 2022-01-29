@@ -34,30 +34,21 @@ def register(userID, username, profile, isAdmin, groupID):
         user = User(userID, username, profile, isAdmin)
         organisation = collection.find_one({"_id": groupID})
         if(organisation==None):
-            print("yup i am here")
             collection.insert_one({"_id": groupID, "userList": {}, "adminList": {}, "tasks": {}, "bibliography": {}, "notifyMessages": {}})
-        print(39)
         organisation = collection.find_one({"_id": groupID})
         for i in organisation.keys():
             print(i)
-        print(41)
         print(userID)
         print(user)
-        x=100
         collection.update_one({"_id": groupID}, {"$set": {"userList":{str(userID):user.toString()}}})
-        # organisation.userList.update({userID: user})
-        # for i in organisation:
-        #     print(organisation[i])
-        print(43)
-        # collection.update({"_id": groupID}, {"$set": {:organisation["userList"]}})
-        print(45)
+        return username + " is now registered as a "+ profile
     except Exception as e:
-        print("fuck off")
+        print(e)
 
 # user enters task id
 def catch(groupID, userID, taskID):
     organisation = collection.find_one({"_id": groupID})
-    if(organisation["userList"].has_key(userID)):
+    if(organisation["userList"].has_key(str(userID))):
         flag=0
         memory_task = organisation["tasks"][0].clone()
         for i in range(0, len(organisation["tasks"][0])):
@@ -79,10 +70,10 @@ def task_list(attr, selfID, groupID):
     organisation = collection.find_one({"_id": groupID})
     if(attr=="all"):
         for task in organisation["tasks"][0]:
-            print(task.ID, " ", task.message, " ", task.timeOfCreation, " ", task.deadline, " ", task.status, " ", task.assignedUser)
+            print(task["ID"], " ", task["message"], " ", task["timeOfCreation"], " ", task["deadline"], " ", task["status"], " ", task["assignedUser"])
 
     elif(attr=="personal"):
-        for task in organisation["tasks"][selfID]:
+        for task in organisation["tasks"]["selfID"]:
             print(task.ID, " ", task.message, " ", task.timeOfCreation, " ", task.deadline, " ", task.status, " ", task.assignedUser)
     else:
         if(organisation["adminList"].has_key(selfID)):
