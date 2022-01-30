@@ -134,8 +134,6 @@ def demoteUser(update, context):
             updater.bot.send_message(update.message.chat.id,mongoDB.admin("demote", currId, idOfPersonToDemote, currGrpId))
             
             
-            
-
 def removeUser(update, context):
     temp = update.message.text.split()
     currUser = update.message.from_user
@@ -153,7 +151,28 @@ def removeUser(update, context):
             # https://core.telegram.org/bots/api#banchatmember
             updater.bot.ban_chat_member(currGrpId, idOfPersonToRemove)
 
+def addTask(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+    time = temp[-1]
+    date = temp[-2]
+    date = date+" "+time
+    message = ""
+    for i in range(1, len(temp)-2):
+        message += i
+        message += " "
 
+    if(len(temp) < 2):
+        updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention the task details")
+    else:
+        print(message, date, currId, currGrpId)
+        # mongoDB.add_task(message, date, currId, currGrpId)
+        
+
+def helpMe(update, context):
+    pass 
       
 def addMemberIfNotAdded(update, context):
     if(update.message.from_user not in allMembers):
@@ -210,6 +229,8 @@ def main():
     dp.add_handler(CommandHandler("promote", promoteUser))
     dp.add_handler(CommandHandler("demote", demoteUser))
     dp.add_handler(CommandHandler("remove", removeUser))
+    dp.add_handler(CommandHandler("addtask", addTask))
+    dp.add_handler(CommandHandler("help", helpMe))
     dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_member))
     dp.add_error_handler(error)
