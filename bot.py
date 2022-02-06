@@ -1,17 +1,23 @@
 import logging
 from turtle import back
 from telegram.ext import *
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import os
 # from decouple import config
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
 # import mongoDB
-logger = logging.getLogger(__name__)
+
+from telegram.bot import Bot, BotCommand
 
 # TOKEN = os.environ.get('TOKEN')
 TOKEN = '5070020632:AAF8FSn_WUBQBLRdAuSXmjqjjC_y3MjfCf8'
 print(TOKEN)
 
+
+command = [BotCommand("start","to start something"),BotCommand("stop", "to stop something")]
+bot = Bot(TOKEN)
+bot.set_my_commands(command)
+logger = logging.getLogger(__name__)
 # register command for each user. call addUser
 # admin command to add or remove admins
 # 
@@ -21,13 +27,13 @@ print(TOKEN)
 # logging.basicConfig(filename="newfile.log",
 # format='%(asctime)s %(message)s', filemode='w')
 def start(update, context):
-    buttons = [
-    ['Add Task'],
-    ['Register']]
-    keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
-
-    update.message.reply_text('Some message', reply_markup=keyboard)
-
+    update.message.reply_text(
+    "Hi! I am a bot that helps you to manage your tasks.\nChoose one of the options below",
+    reply_markup=InlineKeyboardMarkup([
+        [InlineKeyboardButton(text='Register User', switch_inline_query_current_chat = "/register"), InlineKeyboardButton(text='Add task', switch_inline_query_current_chat = "/addtask")],
+        [InlineKeyboardButton(text='Add task', switch_inline_query_current_chat = "/addtask")],
+    ])
+    )
 
 
 def helpMe(update, context):
@@ -221,7 +227,6 @@ def remRes(update, context):
 
 
 def echo(update, context):
-    addMemberIfNotAdded(update, context)
     print(update.message.chat.id)
     print("hello")
     print(update.message)
