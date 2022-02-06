@@ -1,16 +1,16 @@
 import logging
 from turtle import back
 from telegram.ext import *
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup
 import os
-from decouple import config
+# from decouple import config
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
-import mongoDB
+# import mongoDB
 logger = logging.getLogger(__name__)
 
-TOKEN = os.environ.get('TOKEN')
+# TOKEN = os.environ.get('TOKEN')
+TOKEN = '5070020632:AAF8FSn_WUBQBLRdAuSXmjqjjC_y3MjfCf8'
 print(TOKEN)
-allMembers = []
 
 # register command for each user. call addUser
 # admin command to add or remove admins
@@ -21,15 +21,23 @@ print(TOKEN)
 # logging.basicConfig(filename="newfile.log",
 # format='%(asctime)s %(message)s', filemode='w')
 def start(update, context):
-    msg  = "Hello, I am bhan_chod."
-    update.message.reply_text(msg)
-    update.message.reply_text(
-    'Cute pics',
-    reply_markup=InlineKeyboardMarkup([
-        [InlineKeyboardButton(text='on Facebook', url='https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=67773a9d419786091c958b2ad08eae5e')],
-        [InlineKeyboardButton(text='on Telegram', url='https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=67773a9d419786091c958b2ad08eae5e')],
-    ])
-)
+    buttons = [
+    ['Add Task'],
+    ['Register']]
+    keyboard = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
+
+    update.message.reply_text('Some message', reply_markup=keyboard)
+
+
+
+def helpMe(update, context):
+    update.message.reply_text("""
+    /register <role> - Register yourself in the group.
+    /showTasks - Show all the tasks assigned to you.
+    /showTasks <all/personal> - Show all the tasks assigned to you or all the tasks assigned to all the members of the group.
+    /taskInfo <task_id> - Show the details of the task.
+    /help - Show this message.
+    """)
 
 # Helper function to check is a person is an admin or not.
 def get_admin_ids(bot, chat_id):
@@ -48,10 +56,6 @@ def registerUser(update, context):
         currName = currUser.username
         currIsAdmin = currId in get_admin_ids(updater.bot, update.message.chat.id)
         currGrpId = update.message.chat.id
-        print(update)
-        print()
-        print(currId, currName, temp[1], currIsAdmin, currGrpId)
-        print()
         updater.bot.send_message(update.message.chat.id, mongoDB.register(currId, currName, temp[1], currIsAdmin, currGrpId))
 
 
@@ -79,7 +83,7 @@ def showTasks(update, context):
             updater.bot.send_message(update.message.chat.id,"Sorry....I didn't get that.")
             return
         
-    updater.bot.send_message(update.message.chat.id, msg)
+
 
 
 def taskInfo(update, context):
@@ -167,17 +171,53 @@ def addTask(update, context):
     if(len(temp) < 2):
         updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention the task details")
     else:
-        print(message, date, currId, currGrpId)
-        # mongoDB.add_task(message, date, currId, currGrpId)
+        # print(message, date, currId, currGrpId)
+        updater.bot.send_message(mongoDB.add_task(message, date, currId, currGrpId))
         
 
-def helpMe(update, context):
-    pass 
+def removeTask(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+
+    
+    if(len(temp) < 2):
+        updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention the task id")
+    else:
+        try:
+            taskID = int(temp[1])
+        except:
+            updater.bot.send_message(update.message.chat.id,"Task ID should be a number.")
+            return 
+        # print(message, date, currId, currGrpId)
+        updater.bot.send_message(mongoDB.remove_task(taskID, currId, currGrpId))
+
+
+# TODO: Link and Message parameters to be considered again.
+def addRes(update, context):
+    temp = update.message.text.split()
+    currUser = update.message.from_user
+    currId = currUser.id
+    currGrpId = update.message.chat.id
+
+    
+    if(len(temp) < 2):
+        updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention the resource details")
+    else:
+        updater.bot.send_message(mongoDB.update_bibliography("add", link, message, currGrpId))
       
-def addMemberIfNotAdded(update, context):
-    if(update.message.from_user not in allMembers):
-        allMembers.append(update.message.from_user)
-        print("Added")
+
+def remRes(update, context):
+   temp = update.message.text.split()
+   currUser = update.message.from_user
+   currId = currUser.id
+   currGrpId = update.message.chat.id 
+   if(len(temp) < 2):
+       updater.bot.send_message(update.message.chat.id,"Looks like you forgot to mention the resource details")
+   else:
+       updater.bot.send_message(mongoDB.update_bibliography("remove", link, message, currGrpId))
+   
 
 
 def echo(update, context):
@@ -198,7 +238,6 @@ def new_member(update, context):
             # for member in allMembers:
             #     print(member.user.first_name)
             
-
         elif member.username != 'YourBot':
             update.message.reply_text('Welcome lol')
             
@@ -223,6 +262,7 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", helpMe))
     dp.add_handler(CommandHandler("register", registerUser))
     dp.add_handler(CommandHandler("tasklist", showTasks))
     dp.add_handler(CommandHandler("taskinfo", taskInfo))
@@ -230,7 +270,9 @@ def main():
     dp.add_handler(CommandHandler("demote", demoteUser))
     dp.add_handler(CommandHandler("remove", removeUser))
     dp.add_handler(CommandHandler("addtask", addTask))
-    dp.add_handler(CommandHandler("help", helpMe))
+    dp.add_handler(CommandHandler("removetask", removeTask))
+    dp.add_handler(CommandHandler("addresource", addRes))
+    dp.add_handler(CommandHandler("removeresource", remRes))
     dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_member))
     dp.add_error_handler(error)
